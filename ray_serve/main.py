@@ -1,13 +1,10 @@
-import requests
-from starlette.requests import Request
 from typing import Dict
 
+from ray import serve
+from starlette.requests import Request
 from transformers import pipeline
 
-from ray import serve
 
-
-# 1: Wrap the pretrained sentiment analysis model in a Serve deployment.
 @serve.deployment
 class SentimentAnalysisDeployment:
     def __init__(self):
@@ -18,4 +15,3 @@ class SentimentAnalysisDeployment:
 
 
 app = SentimentAnalysisDeployment.bind()
-
