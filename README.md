@@ -8,7 +8,7 @@ See:
 
 
 
-### non-batched version
+## non-batched version
 
 To run:
 
@@ -24,3 +24,8 @@ To curl:
 Just run:
 
     poetry run python ./ray_serve/batch.py
+
+
+## misc
+
+To show metrics in the dashboard: https://docs.ray.io/en/latest/cluster/metrics.html
