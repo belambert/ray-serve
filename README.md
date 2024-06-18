@@ -3,7 +3,8 @@
 See:
 - https://docs.ray.io/en/latest/serve/index.html
 - https://docs.ray.io/en/latest/serve/getting_started.html
-
+- https://docs.ray.io/en/latest/serve/advanced-guides/performance.html
+- https://docs.ray.io/en/latest/serve/advanced-guides/dyn-req-batch.html
 
 To run:
 
