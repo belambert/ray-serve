@@ -8,7 +8,7 @@ See:
 
 
 
-## non-batched version
+## batched version
 
 To run:
 
@@ -18,12 +18,9 @@ To curl:
 
     curl "http://localhost:8000?text=happy"
 
+To trigger batching curl like this:
 
-## batched version
-
-Just run:
-
-    poetry run python ./ray_serve/batch.py
+    for i in `seq 1 10`; do; curl "http://localhost:8000?text=happy" &; done;
 
 
 ## misc
