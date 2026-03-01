@@ -1,1 +1,1 @@
-poetry run serve run ray_serve.main:app
+uv run serve run ray_serve.main:app

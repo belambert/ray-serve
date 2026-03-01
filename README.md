@@ -22,12 +22,12 @@ The app wraps a Hugging Face `sentiment-analysis` pipeline in a Ray Serve deploy
 ## Prerequisites
 
 - Python 3.11+
-- [Poetry](https://python-poetry.org/)
+- [uv](https://docs.astral.sh/uv/)
 
 ## Installation
 
 ```bash
-poetry install
+uv sync
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ poetry install
 ### Start the server
 
 ```bash
-poetry run serve run ray_serve.main:app
+uv run serve run ray_serve.main:app
 ```
 
 On first run, the Hugging Face model (`distilbert-base-uncased-finetuned-sst-2-english`) is downloaded and cached automatically.
