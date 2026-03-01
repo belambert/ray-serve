@@ -1,28 +1,45 @@
+# Ray Serve Batched Sentiment Analysis
 
+A Ray Serve application that deploys a batched sentiment analysis model using Hugging Face Transformers.
 
-See:
-- https://docs.ray.io/en/latest/serve/index.html
-- https://docs.ray.io/en/latest/serve/getting_started.html
-- https://docs.ray.io/en/latest/serve/advanced-guides/performance.html
-- https://docs.ray.io/en/latest/serve/advanced-guides/dyn-req-batch.html
+## Installation
 
+```bash
+poetry install
+```
 
+## Usage
 
-## batched version
+### Start the server
 
-To run:
+```bash
+poetry run serve run ray_serve.main:app
+```
 
-    poetry run serve run ray_serve.main:app
+### Make requests
 
-To curl:
+Single request:
 
-    curl "http://localhost:8000?text=happy"
+```bash
+curl "http://localhost:8000?text=happy"
+```
 
-To trigger batching curl like this:
+Multiple concurrent requests to trigger batching:
 
-    for i in `seq 1 10`; do; curl "http://localhost:8000?text=happy" &; done;
+```bash
+for i in `seq 1 10`; do; curl "http://localhost:8000?text=happy" &; done;
+```
 
+## Architecture
 
-## misc
+- **Model**: Hugging Face sentiment-analysis pipeline
+- **Batching**: Ray's `@serve.batch` with max batch size 8 and 0.1s timeout
+- **Input**: Text via query parameter `text`
+- **Output**: List of sentiment analysis results
 
-To show metrics in the dashboard: https://docs.ray.io/en/latest/cluster/metrics.html
+## Related Documentation
+
+- [Ray Serve Overview](https://docs.ray.io/en/latest/serve/index.html)
+- [Ray Serve Getting Started](https://docs.ray.io/en/latest/serve/getting_started.html)
+- [Ray Serve Performance Guides](https://docs.ray.io/en/latest/serve/advanced-guides/performance.html)
+- [Dynamic Request Batching](https://docs.ray.io/en/latest/serve/advanced-guides/dyn-req-batch.html)
