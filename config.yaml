@@ -1,0 +1,8 @@
+applications:
+  - name: sentiment
+    route_prefix: /sentiment
+    import_path: ray_serve.sentiment:app
+
+  - name: translation
+    route_prefix: /translation
+    import_path: ray_serve.translation:app

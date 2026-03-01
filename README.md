@@ -1,18 +1,24 @@
 # Ray Serve example
 
-A Ray Serve example application. Deploys a sentiment analysis
-model with dynamic request batching using Hugging Face
-Transformers. Concurrent requests are automatically grouped
-into batches for improved throughput.
+A Ray Serve example application. Deploys two models with
+dynamic request batching using Hugging Face Transformers:
+
+- **Sentiment analysis** — classifies text as positive or
+  negative.
+- **Translation (EN → FR)** — translates English text to
+  French using Helsinki-NLP/opus-mt-en-fr.
+
+Concurrent requests are automatically grouped into batches
+for improved throughput.
 
 ## How it works
 
-The app wraps a Hugging Face `sentiment-analysis` pipeline in
-a Ray Serve deployment. Ray's `@serve.batch` decorator
-accumulates incoming requests and processes them together,
-reducing per-request overhead.
+Each deployment wraps a Hugging Face pipeline in a Ray
+Serve deployment. Ray's `@serve.batch` decorator accumulates
+incoming requests and processes them together, reducing
+per-request overhead.
 
-**Batching parameters:**
+**Batching parameters (both deployments):**
 
 - **Max batch size**: 8 — up to 8 requests are grouped into
   a single inference call.
@@ -22,8 +28,8 @@ reducing per-request overhead.
 **Request flow:**
 
 1. Client sends a GET request with a `text` query parameter.
-2. Ray Serve routes the request to
-   `BatchedSentimentModel.__call__`.
+2. Ray Serve routes the request to the appropriate
+   deployment based on the route prefix.
 3. The `handle_batch` method collects requests until the
    batch is full or the timeout expires.
 4. The Hugging Face pipeline runs inference on the entire
@@ -46,19 +52,18 @@ uv sync
 ### Start the server
 
 ```bash
-uv run serve run ray_serve.main:app
+uv run serve run config.yaml
 ```
 
-On first run, the Hugging Face model
-(`distilbert-base-uncased-finetuned-sst-2-english`) is
-downloaded and cached automatically.
+On first run, the Hugging Face models are downloaded and
+cached automatically.
 
 ### Make requests
 
-Single request:
+Sentiment analysis:
 
 ```bash
-curl "http://localhost:8000?text=happy"
+curl "http://localhost:8000/sentiment?text=happy"
 ```
 
 Example response:
@@ -67,11 +72,23 @@ Example response:
 [{"label": "POSITIVE", "score": 0.9998}]
 ```
 
+Translation (EN → FR):
+
+```bash
+curl "http://localhost:8000/translation?text=hello world"
+```
+
+Example response:
+
+```json
+[{"translation_text": "Bonjour le monde"}]
+```
+
 Multiple concurrent requests to trigger batching:
 
 ```bash
 for i in `seq 1 10`; do
-  curl "http://localhost:8000?text=happy" &
+  curl "http://localhost:8000/sentiment?text=happy" &
 done
 ```
 
@@ -83,12 +100,14 @@ showing how many requests were grouped.
 ```
 ray_serve/
 ├── __init__.py
-└── main.py          # Ray Serve deployment with batched inference
+├── sentiment.py     # sentiment analysis deployment
+└── translation.py   # EN→FR translation deployment
 tests/
 ├── __init__.py
+config.yaml          # Ray Serve multi-app config
 pyproject.toml       # dependencies and project config
 start.sh             # server startup shortcut
-curl.sh              # example request shortcut
+curl.sh              # example request shortcuts
 ```
 
 ## Dependencies
@@ -96,7 +115,7 @@ curl.sh              # example request shortcut
 | Package        | Purpose                                |
 | -------------- | -------------------------------------- |
 | `ray[serve]`   | Model serving with request batching    |
-| `transformers` | Pre-trained sentiment analysis pipeline|
+| `transformers` | Pre-trained ML pipelines               |
 | `torch`        | PyTorch backend for transformers       |
 | `numpy`        | Numerical computing (torch dependency) |
 
